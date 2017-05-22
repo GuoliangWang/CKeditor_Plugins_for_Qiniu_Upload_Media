@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+	<title>CKeditor_Plugins_for_Qiniu TEST</title>
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+
+<script type="text/javascript" src="js/plupload.full.min.js"></script>
+<script type="text/javascript" src="js/qiniu.js"></script>
+<script type="text/javascript" src="ckeditor/ckeditor.js"></script>
+
+<!-- 环境初始化 开始-->
+<script language="javascript">
+var saveto ='qiniu';   //储存位置为七牛云，对应于插件里的判断值
+var qiniu_upload_domain='http://7xlg4z.com2.z0.glb.qiniucdn.com/';   //七牛云上传地址，一般无需修改，https需要修改成对应的七牛云https上传域名
+var qiniu_bucket_domain='http://7xlg4z.com2.z0.glb.qiniucdn.com/';   //七牛云bucket设置的域名
+var urlForGetQiniuToken="http://www.outingman.com/file/uptoken";
+var smsLoginToken = '32ff1552a73611e6934400163e0056ea';
+</script>
+<!-- 环境初始化 结束-->
+
+<script type="text/javascript" src="libs/jquery/jquery-3.1.0.js"></script>
+</head>
+<body>
+	<h1>CKeditor_Plugins_for_Qiniu TEST</h1>
+	<textarea name="editor1" id="editor1" rows="20" cols="80">This is my textarea to be replaced with CKEditor.</textarea>
+
+<script type="text/javascript">
+
+CKEDITOR.replace('editor1',{"extraPlugins":"filebrowser,image,imagepaste,filetools"});
+
+</script>
+</body>
+</html>
