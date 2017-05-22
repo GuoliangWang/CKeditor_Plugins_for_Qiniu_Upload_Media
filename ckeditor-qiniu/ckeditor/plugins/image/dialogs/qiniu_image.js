@@ -1264,146 +1264,117 @@
 	CKEDITOR.dialog.add( 'imagebutton', function( editor ) {
 		return imageDialog( editor, 'imagebutton' );
 	} );
+
+	var uploader, uploadToken, fileKey;
+	var uptokenFromServer = function() {
+	   	return uploadToken;
+	}
+	var keyFromServer = function() {
+	    return fileKey;
+	}
+
+	function savetoqiniu(){
+		uploader = Qiniu.uploader({
+		runtimes: "html5,flash,html4",
+		browse_button: "setfile",
+		// uptoken: "占位,以防运行错误",
+		uptoken_func:uptokenFromServer,
+		get_new_uptoken: true,
+		domain: qiniu_bucket_domain,
+		container: "container",
+		max_file_size: "40mb",
+		filters: {
+			mime_types: [{
+				title: "Image files",
+				extensions: "jpeg,jpg,gif,png,wbmp"
+			}]
+		},
+		flash_swf_url: "./Moxie.swf",
+		max_retries: 3,
+		dragdrop: true,
+		drop_element: "container",
+		chunk_size: "4mb",
+		auto_start: false,
+		init: {
+			"PostInit": function() {
+				document.getElementById("uploadfile").onclick = function() {
+					//document.getElementById("setfile").style.display = "none";
+					uploadFilesToQiniu();
+					return false
+				}
+			},
+			"FilesAdded": function(up, files) {
+				plupload.each(files,
+				function(file) {
+					document.getElementById("fileinfo").innerHTML += '<div id="' + file.id + '">' + file.name + "&nbsp;&nbsp;&nbsp;(" + plupload.formatSize(file.size) + ")&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b></b>	<i></i></div><br>";
+				})
+				willUploadFilesToQiniu = willUploadFilesToQiniu.concat(files); 
+			},
+			"BeforeUpload": function(up, file) {},
+			"UploadProgress": function(up, file) {},
+			"FileUploaded": function(up, file, info) {
+			    // $('#'+parentCon).find('span').remove();
+                var res = JSON.parse(info);
+                var sourceLink = qiniu_bucket_domain + "/" + res.key;
+                document.getElementById(file.id).getElementsByTagName("i")[0].innerHTML = sourceLink;
+                window.CKEDITOR.tools.callFunction(1, sourceLink, 'ok');
+                getQiniuUptoken();
+			},
+			"Error": function(up, err, errTip) {
+				console.log(err +"  tip:"+ errTip);
+			},
+			"UploadComplete": function() {},
+			"Key": keyFromServer,
+		}
+	});
+	}
+
+	var willUploadFilesToQiniu = [];
+	function uploadFilesToQiniu()
+	{
+		getQiniuUptoken();
+	}
+
+	function getQiniuUptoken()
+	{
+		if (!willUploadFilesToQiniu || willUploadFilesToQiniu.length == 0) {
+			return;
+		}
+		
+		 // var requestUrl = urlHelper.urlWithPath('/outingstrategy/app/line_sys/trip_list?');
+	  //           var lineId = urlHelper.getParameterByName('line_id');
+	  //           var params = urlHelper.defaultParams();
+	  //           params.line_id = lineId;
+	  //          
+	            var file = willUploadFilesToQiniu.shift();
+	            var requestUrl =  urlForGetQiniuToken;
+	            var fileRealType = file.type.substring(6);
+	            var params = {tk:smsLoginToken,ft:"."+fileRealType};//file.type="image/png"
+		 		$.ajax({
+	                url: requestUrl,
+	                type: 'POST',
+	                dataType: 'json',
+	                data: params,
+	            })
+	            .done(function(data) {
+	                console.log("success");
+	                console.log(data);
+					uploadFileToQiniu(file, data.tk, data.fn);
+	            })
+	            .fail(function(data) {
+	                console.log("error");
+	            })
+	            .always(function() {
+	                console.log("complete");
+	            });  
+	}
+
+	function uploadFileToQiniu(pFile, pUploadToken, pFileKey)
+	{
+	 	uploadToken = pUploadToken;
+	    fileKey = pFileKey;
+	    // fileUrl = fileUrl;
+	    uploader.start();
+	}
+
 } )();
-
-function savetoqiniu(){
-	var uploader = Qiniu.uploader({
-	runtimes: "html5,flash,html4",
-	browse_button: "setfile",
-	uptoken: "占位,以防运行错误",
-	get_new_uptoken: true,
-	domain: qiniu_bucket_domain,
-	container: "container",
-	max_file_size: "6mb",
-	filters: {
-		mime_types: [{
-			title: "Image files",
-			extensions: "jpeg,jpg,gif,png,wbmp"
-		}]
-	},
-	flash_swf_url: "./Moxie.swf",
-	max_retries: 3,
-	dragdrop: true,
-	drop_element: "container",
-	chunk_size: "4mb",
-	auto_start: false,
-	init: {
-		"PostInit": function() {
-			document.getElementById("uploadfile").onclick = function() {
-				//document.getElementById("setfile").style.display = "none";
-				uploadFilesToQiniu();
-				return false
-			}
-		},
-		"FilesAdded": function(up, files) {
-			plupload.each(files,
-			function(file) {
-				document.getElementById("fileinfo").innerHTML += '<div id="' + file.id + '">' + file.name + "&nbsp;&nbsp;&nbsp;(" + plupload.formatSize(file.size) + ")&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b></b>	<i></i></div><br>"
-				+ '<div id="'+"container" + file.id + '">'+  '<a href="javascript:void(0)"' + 'id="'+ "setfile"  + file.id + '">[点击选择文件]</a> </div>';
-				var fileOptContainer = document.getElementById("container" + file.id);
-				$(fileOptContainer).css('display', 'none');
-			})
-			willUploadFilesToQiniu = willUploadFilesToQiniu.concat(files); 
-		},
-		"BeforeUpload": function(up, file) {},
-		"UploadProgress": function(up, file) {},
-		"FileUploaded": function(up, file, info) {},
-		"Error": function(up, err, errTip) {
-			console.log(err +"  tip:"+ errTip);
-		},
-		"UploadComplete": function() {},
-		"Key": function(up, file) {
-			return null;
-		}
-	}
-});
-}
-
-var willUploadFilesToQiniu = [];
-function uploadFilesToQiniu()
-{
-	getQiniuUptoken();
-}
-
-function getQiniuUptoken()
-{
-	if (!willUploadFilesToQiniu || willUploadFilesToQiniu.length == 0) {
-		return;
-	}
-	
-	 // var requestUrl = urlHelper.urlWithPath('/outingstrategy/app/line_sys/trip_list?');
-  //           var lineId = urlHelper.getParameterByName('line_id');
-  //           var params = urlHelper.defaultParams();
-  //           params.line_id = lineId;
-  //          
-            var file = willUploadFilesToQiniu.shift();
-            var requestUrl =  urlForGetQiniuToken;
-            var fileRealType = file.type.substring(6);
-            var params = {tk:smsLoginToken,ft:"."+fileRealType};//file.type="image/png"
-	 		$.ajax({
-                url: requestUrl,
-                type: 'POST',
-                dataType: 'json',
-                data: params,
-            })
-            .done(function(data) {
-                console.log("success");
-                console.log(data);
-				uploadFileToQiniu(file, data.tk, data.fn);
-            })
-            .fail(function(data) {
-                console.log("error");
-            })
-            .always(function() {
-                console.log("complete");
-            });  
-}
-
-function uploadFileToQiniu(file, uploadToken, fileKey)
-{
-var uploader = Qiniu.uploader({
-	runtimes: "html5,flash,html4",
-	browse_button: "setfile" + file.id,
-	uptoken: uploadToken,
-	get_new_uptoken: true,
-	domain: qiniu_bucket_domain,
-	container: "container" + file.id,
-	max_file_size: "6mb",
-	filters: {
-		mime_types: [{
-			title: "Image files",
-			extensions: "jpeg,jpg,gif,png,wbmp"
-		}]
-	},
-	flash_swf_url: "./Moxie.swf",
-	max_retries: 1,
-	dragdrop: true,
-	drop_element: "container" + file.id,
-	chunk_size: "4mb",
-	auto_start: false,
-	init: {
-		"FilesAdded": function(up, files) {
-			console.log("FilesAdded" +  files);
-		},
-		"BeforeUpload": function(up, file) {},
-		"UploadProgress": function(up, file) {
-			document.getElementById(file.id).getElementsByTagName("b")[0].innerHTML = "<span>" + file.percent + "%</span>"
-		},
-		"FileUploaded": function(up, file, info) {
-			var res = JSON.parse(info);
-			var sourceLink = qiniu_bucket_domain + "/" + res.key;
-			document.getElementById(file.id).getElementsByTagName("i")[0].innerHTML = sourceLink;
-			window.CKEDITOR.tools.callFunction(1, sourceLink, 'ok');
-			getQiniuUptoken();
-		},
-		"Error": function(up, err, errTip) {},
-		"UploadComplete": function() {},
-		"Key": function(up, file) {
-			return fileKey;
-		}
-	}
-});
-
-uploader.addFile(file);
-uploader.start();
-}
