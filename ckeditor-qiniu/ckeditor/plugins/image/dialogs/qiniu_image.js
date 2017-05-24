@@ -1090,7 +1090,7 @@
 					elements: [ {
 						type: 'html',
 						id: 'upload',
-						html:'<div id="fileinfo"></div><div id="container"><a href="javascript:void(0)" id="setfile">[点击选择文件]</a><a href="javascript:void(0)" id="uploadfile">[ 上传 ]</a></div>'
+						html:'<div id="fileinfo"></div><div id="container"><a href="javascript:void(0)" id="setfile">[点击选择文件]</a></div>'
 					}]
 				},
 				
@@ -1265,7 +1265,7 @@
 		return imageDialog( editor, 'imagebutton' );
 	} );
 
-	var uploader, uploadToken, fileKey;
+	var uploader, uploadToken, fileKey, fileUrl;
 	var uptokenFromServer = function() {
 	   	return uploadToken;
 	}
@@ -1282,7 +1282,7 @@
 		get_new_uptoken: true,
 		domain: qiniu_bucket_domain,
 		container: "container",
-		max_file_size: "40mb",
+		max_file_size: "4mb",
 		filters: {
 			mime_types: [{
 				title: "Image files",
@@ -1295,30 +1295,32 @@
 		drop_element: "container",
 		chunk_size: "4mb",
 		auto_start: false,
+		multi_selection: false,
 		init: {
-			"PostInit": function() {
-				document.getElementById("uploadfile").onclick = function() {
-					//document.getElementById("setfile").style.display = "none";
-					uploadFilesToQiniu();
-					return false
-				}
-			},
+			// "PostInit": function() {
+			// 	document.getElementById("uploadfile").onclick = function() {
+			// 		//document.getElementById("setfile").style.display = "none";
+			// 		uploadFilesToQiniu();
+			// 		return false
+			// 	}
+			// },
 			"FilesAdded": function(up, files) {
 				plupload.each(files,
 				function(file) {
 					document.getElementById("fileinfo").innerHTML += '<div id="' + file.id + '">' + file.name + "&nbsp;&nbsp;&nbsp;(" + plupload.formatSize(file.size) + ")&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b></b>	<i></i></div><br>";
 				})
 				willUploadFilesToQiniu = willUploadFilesToQiniu.concat(files); 
+				uploadFilesToQiniu();
 			},
 			"BeforeUpload": function(up, file) {},
 			"UploadProgress": function(up, file) {},
 			"FileUploaded": function(up, file, info) {
 			    // $('#'+parentCon).find('span').remove();
                 var res = JSON.parse(info);
-                var sourceLink = qiniu_bucket_domain + "/" + res.key;
+                var sourceLink = fileUrl;
                 document.getElementById(file.id).getElementsByTagName("i")[0].innerHTML = sourceLink;
                 window.CKEDITOR.tools.callFunction(1, sourceLink, 'ok');
-                getQiniuUptoken();
+                // getQiniuUptoken();
 			},
 			"Error": function(up, err, errTip) {
 				console.log(err +"  tip:"+ errTip);
@@ -1359,7 +1361,7 @@
 	            .done(function(data) {
 	                console.log("success");
 	                console.log(data);
-					uploadFileToQiniu(file, data.tk, data.fn);
+					uploadFileToQiniu(file, data.tk, data.fn, data.url);
 	            })
 	            .fail(function(data) {
 	                console.log("error");
@@ -1369,11 +1371,11 @@
 	            });  
 	}
 
-	function uploadFileToQiniu(pFile, pUploadToken, pFileKey)
+	function uploadFileToQiniu(pFile, pUploadToken, pFileKey, pUrl)
 	{
 	 	uploadToken = pUploadToken;
 	    fileKey = pFileKey;
-	    // fileUrl = fileUrl;
+	    fileUrl = pUrl;
 	    uploader.start();
 	}
 

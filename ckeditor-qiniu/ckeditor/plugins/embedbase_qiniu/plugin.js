@@ -79,7 +79,7 @@
 		}
 	};
 
-	CKEDITOR.plugins.add( 'embedbase', {
+	CKEDITOR.plugins.add( 'embedbase_qiniu', {
 		lang: 'cs,da,de,de-ch,en,eo,es,eu,fr,gl,id,it,ko,ku,nb,nl,pl,pt,pt-br,ru,sv,tr,ug,uk,zh,zh-cn', // %REMOVE_LINE_CORE%
 		requires: 'widget,notificationaggregator',
 
@@ -88,7 +88,7 @@
 		},
 
 		init: function() {
-			CKEDITOR.dialog.add( 'embedBase', this.path + 'dialogs/embedbase.js' );
+			CKEDITOR.dialog.add( 'embedBaseQiniu', this.path + 'dialogs/embedbase.js' );
 		}
 	} );
 
@@ -118,7 +118,7 @@
 	 */
 	function createWidgetBaseDefinition( editor ) {
 		var aggregator,
-			lang = editor.lang.embedbase;
+			lang = editor.lang.embedbase_qiniu;
 
 		/**
 		 * An embed widget base definition. It predefines a few {@link CKEDITOR.plugins.widget.definition widget definition}
@@ -212,6 +212,10 @@
 						evt.cancel();
 					}
 				}, this, null, 999 );
+			},
+			setVideoContent : function(url) {
+				var videoContent = '<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;"><video style="position:absolute; width:100%;height:100%;" controls="" src="' + url + '"></div>'
+				this._setContent(url, videoContent);
 			},
 			/**
 			 * Loads content for a given resource URL by requesting the {@link #providerUrl provider}.
@@ -369,7 +373,7 @@
 			 * @returns {String}
 			 */
 			getErrorMessage: function( messageTypeOrMessage, url, suffix ) {
-				var message = editor.lang.embedbase[ messageTypeOrMessage + ( suffix || '' ) ];
+				var message = editor.lang.embedbase_qiniu[ messageTypeOrMessage + ( suffix || '' ) ];
 				if ( !message ) {
 					message = messageTypeOrMessage;
 				}
@@ -643,7 +647,7 @@
 	 * @method cancel
 	 */
 
-	CKEDITOR.plugins.embedBase = {
+	CKEDITOR.plugins.embedBaseQiniu = {
 		createWidgetBaseDefinition: createWidgetBaseDefinition,
 		_jsonp: Jsonp
 	};
