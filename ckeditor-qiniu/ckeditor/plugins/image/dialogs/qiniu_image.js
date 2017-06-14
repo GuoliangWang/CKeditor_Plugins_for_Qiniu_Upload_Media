@@ -1090,7 +1090,7 @@
 					elements: [ {
 						type: 'html',
 						id: 'upload',
-						html:'<div id="fileinfo"></div><div id="container"><a href="javascript:void(0)" id="setfile">[点击选择文件]</a></div>'
+						html:'<div id="fileinfo"></div><div id="ckeditor-select-image-container"><a href="javascript:void(0)" id="ckeditor-select-image-setfile">[点击选择文件]</a></div>'
 					}]
 				},
 				
@@ -1276,12 +1276,12 @@
 	function savetoqiniu(){
 		uploader = Qiniu.uploader({
 		runtimes: "html5,flash,html4",
-		browse_button: "setfile",
+		browse_button: "ckeditor-select-image-setfile",
 		// uptoken: "占位,以防运行错误",
 		uptoken_func:uptokenFromServer,
 		get_new_uptoken: true,
 		domain: qiniu_bucket_domain,
-		container: "container",
+		container: "ckeditor-select-image-container",
 		max_file_size: "4mb",
 		filters: {
 			mime_types: [{
@@ -1292,7 +1292,7 @@
 		flash_swf_url: "./Moxie.swf",
 		max_retries: 3,
 		dragdrop: true,
-		drop_element: "container",
+		drop_element: "ckeditor-select-image-container",
 		chunk_size: "4mb",
 		auto_start: false,
 		multi_selection: false,

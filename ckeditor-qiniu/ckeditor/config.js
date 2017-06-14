@@ -8,10 +8,10 @@ CKEDITOR.editorConfig = function( config ) {
 	config.autoParagraph = false;
     config.enterMode = CKEDITOR.ENTER_BR;
 	config.shiftEnterMode = CKEDITOR.ENTER_P; 
-	config.removeButtons = 'Cut,Copy,Paste,Italic,Underline,Strike,CreateDiv,JustifyBlock,Anchor,Styles,Font,BGColor';
+	config.removeButtons = 'Cut,Copy,Paste,Italic,Underline,Strike,CreateDiv,JustifyBlock,Anchor,Styles';//Font,BGColor
 	config.autoGrow_onStartup = true;
 	config.autoGrow_minHeight = 300;
 	config.autoGrow_maxHeight = 450;
 	config.autoGrow_bottomSpace = 50;
-	
+	config.font_names = "微软雅黑/微软雅黑;宋体/宋体;黑体/黑体;仿宋/仿宋_GB2312;楷体/楷体_GB2312;隶书/隶书;幼圆/幼圆;";
 };
