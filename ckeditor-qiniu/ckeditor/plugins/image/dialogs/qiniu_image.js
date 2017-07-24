@@ -480,7 +480,13 @@
 					}
 
 					this.commitContent = commitContent;
-					savetoqiniu();
+
+					this.on('selectPage', function (e) {
+						console.log("哈哈" + e);
+						if (e.data.page == "Upload") {
+							savetoqiniu();
+						}
+		            });
 				},
 				onHide: function() {
 					if ( this.preview )
@@ -1090,7 +1096,7 @@
 					elements: [ {
 						type: 'html',
 						id: 'upload',
-						html:'<div id="fileinfo"></div><div id="ckeditor-select-image-container"><a href="javascript:void(0)" id="ckeditor-select-image-setfile">[点击选择文件]</a></div>'
+						html:'<div id="ckeditor-select-image-fileinfo" style="max-height:250px;overflow-y:scroll;"></div><div id="ckeditor-select-image-container"><a href="javascript:void(0)" id="ckeditor-select-image-setfile">[点击选择文件]</a></div>'
 					}]
 				},
 				
@@ -1274,6 +1280,9 @@
 	}
 
 	function savetoqiniu(){
+		if (uploader) {
+			uploader.destroy();
+		}
 		uploader = Qiniu.uploader({
 		runtimes: "html5,flash,html4",
 		browse_button: "ckeditor-select-image-setfile",
@@ -1307,7 +1316,7 @@
 			"FilesAdded": function(up, files) {
 				plupload.each(files,
 				function(file) {
-					document.getElementById("fileinfo").innerHTML += '<div id="' + file.id + '">' + file.name + "&nbsp;&nbsp;&nbsp;(" + plupload.formatSize(file.size) + ")&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b></b>	<i></i></div><br>";
+					document.getElementById("ckeditor-select-image-fileinfo").innerHTML += '<div id="' + file.id + '">' + file.name + "&nbsp;&nbsp;&nbsp;(" + plupload.formatSize(file.size) + ")&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b></b>	<i></i></div><br>";
 				})
 				willUploadFilesToQiniu = willUploadFilesToQiniu.concat(files); 
 				uploadFilesToQiniu();
