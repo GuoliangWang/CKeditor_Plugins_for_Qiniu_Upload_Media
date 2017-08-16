@@ -451,7 +451,10 @@
 								}
 							}
 						} else {
-							editor.insertElement( this.imageElement );
+							var imgContainer = editor.document.createElement( 'div' );
+							imgContainer.setAttribute( 'style', 'margin-left:-20px; margin-right:-20px;' ); 
+							this.imageElement.appendTo(imgContainer);
+							editor.insertElement( imgContainer );
 						}
 					}
 					// Image already exists.
@@ -482,7 +485,7 @@
 					this.commitContent = commitContent;
 
 					this.on('selectPage', function (e) {
-						console.log("哈哈" + e);
+						console.log("切换标签页" + e);
 						if (e.data.page == "Upload") {
 							savetoqiniu();
 						}
@@ -1316,7 +1319,7 @@
 			"FilesAdded": function(up, files) {
 				plupload.each(files,
 				function(file) {
-					document.getElementById("ckeditor-select-image-fileinfo").innerHTML += '<div id="' + file.id + '">' + file.name + "&nbsp;&nbsp;&nbsp;(" + plupload.formatSize(file.size) + ")&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b></b>	<i></i></div><br>";
+					document.getElementById("ckeditor-select-image-fileinfo").innerHTML += '<div id="' + file.id + '">' + file.name + "&nbsp;&nbsp;&nbsp;(" + plupload.formatSize(file.size) + ")&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b></b>	<i style='max-width:200px;display:inline-block;overflow-x:hidden;'></i></div><br>";
 				})
 				willUploadFilesToQiniu = willUploadFilesToQiniu.concat(files); 
 				uploadFilesToQiniu();
@@ -1335,7 +1338,7 @@
 				console.log(err +"  tip:"+ errTip);
 			},
 			"UploadComplete": function() {},
-			"Key": keyFromServer,
+			"Key": keyFromServer
 		}
 	});
 	}
@@ -1365,7 +1368,7 @@
 	                url: requestUrl,
 	                type: 'POST',
 	                dataType: 'json',
-	                data: params,
+	                data: params
 	            })
 	            .done(function(data) {
 	                console.log("success");

@@ -11,5 +11,7 @@ CKEDITOR.plugins.setLang( 'embedbase_qiniu', 'zh-cn', {
 	fetchingFailedGiven: '无法抓取此 URL 的内容。',
 	fetchingFailed: '无法抓取 {url} 的内容。',
 	fetchingOne: '正在抓取……',
-	fetchingMany: '正在抓取，{max} 中的 {current} ……'
+	fetchingMany: '正在抓取，{max} 中的 {current} ……',
+	unsupportedIfameGiven: '不支持指定的 iframe字符串。',
+	iframe: 'iframe'
 } );

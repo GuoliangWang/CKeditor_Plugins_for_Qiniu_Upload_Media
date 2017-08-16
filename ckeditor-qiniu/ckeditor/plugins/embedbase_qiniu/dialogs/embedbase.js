@@ -140,8 +140,13 @@ CKEDITOR.dialog.add( 'embedBaseQiniu', function( editor ) {
 				that.setState( CKEDITOR.DIALOG_STATE_BUSY );
 
 				var url = that.getValueOf( 'info', 'url' );
-
-				that.widget.setVideoContent(url);
+				var iframe = that.getValueOf( 'info', 'iframe' );
+				if ($.trim(url).length != 0) {
+					that.widget.setVideoContent(url);
+				}
+				else if ($.trim(iframe).length != 0) {
+					that.widget.setIframeContent(iframe);
+				}
 				if ( !that.widget.isReady() ) {
 					editor.widgets.finalizeCreation( that.widget.wrapper.getParent( true ) );
 				}
@@ -196,9 +201,30 @@ CKEDITOR.dialog.add( 'embedBaseQiniu', function( editor ) {
 				elements: [
 					{
 						type: 'text',
+						id: 'iframe',
+						label: lang.iframe,
+						required: false,
+
+						setup: function( widget ) {
+							this.setValue( widget.data.iframe );
+						},
+
+						validate: function() {
+							var iframe = this.getValue();
+							if ($.trim(iframe).length == 0) {
+								return true;
+							}
+							if (iframe.indexOf('<iframe') == -1) {
+								return lang.unsupportedIfameGiven;
+							}
+							return true;
+						}
+					},
+					{
+						type: 'text',
 						id: 'url',
 						label: editor.lang.common.url,
-						required: true,
+						required: false,
 
 						setup: function( widget ) {
 							this.setValue( widget.data.url );
@@ -206,6 +232,9 @@ CKEDITOR.dialog.add( 'embedBaseQiniu', function( editor ) {
 
 						validate: function() {
 							var url = this.getValue();
+							if ($.trim(url).length == 0) {
+								return true;
+							}
 							if (url == fileUrl) {
 								return true;
 							}
@@ -220,7 +249,7 @@ CKEDITOR.dialog.add( 'embedBaseQiniu', function( editor ) {
 						type: 'html',
 						id: 'upload',
 						html:'<div id="' + embedQiniuFileinfoId + '"></div><div id="' + embedQiniuSelectBtnContainerId + '"><a href="javascript:void(0)" id="' + embedQiniuSelectBtnId +  '">[点击选择文件]</a></div>'
-					},
+					}
 				]
 			}
 		]

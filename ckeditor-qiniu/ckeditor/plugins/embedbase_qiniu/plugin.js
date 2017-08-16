@@ -217,6 +217,21 @@
 				var videoContent = '<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;"><video style="position:absolute; width:100%;height:100%;" controls="" src="' + url + '"></div>'
 				this._setContent(url, videoContent);
 			},
+			setIframeContent : function(iframeStr) {
+				var $iframeElement = $(iframeStr);
+				$iframeElement.css({
+					width: '100%',
+					height: '100%',
+					position: 'absolute',
+					border: 0,
+					left: 0,
+					top: 0
+				});
+				var $divElement = $('<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.2493%;"></div>');
+				$divElement.append($iframeElement);
+				this.setData( 'iframe', iframeStr );
+				this.element.setHtml( $divElement.prop("outerHTML") );
+			},
 			/**
 			 * Loads content for a given resource URL by requesting the {@link #providerUrl provider}.
 			 *
