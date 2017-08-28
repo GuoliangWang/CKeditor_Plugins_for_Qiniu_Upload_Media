@@ -151,7 +151,7 @@
 					var oImageOriginal = dialog.originalElement,
 						ready = oImageOriginal.getCustomData( 'isReady' ) == 'true';
 
-					if ( ready ) {
+					// if ( ready ) {
 						var widthField = dialog.getContentElement( 'info', 'txtWidth' ),
 							heightField = dialog.getContentElement( 'info', 'txtHeight' ),
 							widthValue, heightValue;
@@ -166,25 +166,31 @@
 
 						widthField && widthField.setValue( widthValue );
 						heightField && heightField.setValue( heightValue );
-					}
+					// }
 					updatePreview( dialog );
 				};
 
-			var autoFitParentSize = function( dialog ) {
+			var autoFitParentSize = function( dialog , force) {
 				var oImageOriginal = dialog.originalElement,
 					ready = oImageOriginal.getCustomData( 'isReady' ) == 'true';
-
-				if ( ready ) {
+				console.log('ready:' + ready);
+				// if ( ready ) {
 					var widthField = dialog.getContentElement( 'info', 'txtWidth' ),
 						heightField = dialog.getContentElement( 'info', 'txtHeight' ),
 						widthValue, heightValue;
+					if (widthField && heightField) {
+						var srcWidthValue = widthField.getValue();
+						var srcHeightValue = heightField.getValue();
+						if (force || (srcWidthValue == "" && srcHeightValue == "")) {
+							widthValue = '100%';
+							heightValue = 'auto';
 
-					widthValue = '100%';
-					heightValue = 'auto';
-
-					widthField && widthField.setValue( widthValue );
-					heightField && heightField.setValue( heightValue );
-				}
+							widthField.setValue( widthValue );
+							heightField.setValue( heightValue );
+						}
+					}
+					
+				// }
 				updatePreview( dialog );
 			};
 
@@ -237,7 +243,9 @@
 					// if ( !this.dontResetSize ) {
 					// 	resetSize( this, editor.config.image_prefillDimensions === false );
 					// }
+					// 
 					autoFitParentSize( this );
+
 					if ( this.firstLoad ) {
 						CKEDITOR.tools.setTimeout( function() {
 							switchLockRatio( this, 'check' );
@@ -451,10 +459,7 @@
 								}
 							}
 						} else {
-							var imgContainer = editor.document.createElement( 'div' );
-							imgContainer.setAttribute( 'style', 'margin-left:-20px; margin-right:-20px;' ); 
-							this.imageElement.appendTo(imgContainer);
-							editor.insertElement( imgContainer );
+							editor.insertElement( this.imageElement );
 						}
 					}
 					// Image already exists.
@@ -554,6 +559,7 @@
 											dialog.preview.setAttribute( 'src', previewPreloader.$.src );
 											updatePreview( dialog );
 										}
+										autoFitParentSize( dialog );
 									}
 									// Dont show preview if no URL given.
 									else if ( dialog.preview ) {
@@ -741,7 +747,7 @@
 										// Activate autoFitParent button
 										if ( autoFitParentSizeButton ) {
 											autoFitParentSizeButton.on( 'click', function( evt ) {
-												autoFitParentSize( this );
+												autoFitParentSize( this, true );
 												evt.data && evt.data.preventDefault();
 											}, this.getDialog() );
 											autoFitParentSizeButton.on( 'mouseover', function() {
