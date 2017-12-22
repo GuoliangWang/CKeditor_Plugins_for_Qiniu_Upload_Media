@@ -1304,7 +1304,7 @@
 		filters: {
 			mime_types: [{
 				title: "Image files",
-				extensions: "jpeg,jpg,gif,png,wbmp"
+				extensions: "jpeg,jpg,gif,png,wbmp,bmp"
 			}]
 		},
 		flash_swf_url: "./Moxie.swf",
